@@ -1,0 +1,17 @@
+node = {:hostname => "docker", :cpus => 2, :mem => 2048, :prov_script => "init.sh"}
+
+
+Vagrant.configure(2) do |config|
+    config.vm.define node[:hostname] do |vmachine|
+        vmachine.vm.box_download_insecure = true
+        vmachine.vm.box = "ubuntu/focal64"
+        vmachine.vm.box_check_update = false
+        vmachine.vm.hostname = node[:hostname]
+        vmachine.vm.network "forwarded_port", guest: 80, host: 80
+        vmachine.vm.provider :virtualbox do |domain|
+            domain.memory = node[:mem]
+            domain.cpus = node[:cpus]
+        end
+        vmachine.vm.provision :shell, path: node[:prov_script]
+    end
+end
